@@ -1,0 +1,270 @@
+<html>
+<!-- start Mixpanel -->
+<script type="text/javascript">
+(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]); b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]); 
+mixpanel.init("c36f5ef7cd8b18985afcb1a8b6e8b96a");
+mixpanel.track('LITIA');
+</script>
+<!-- end Mixpanel -->
+<title>
+Libraries in the Information Age
+</title>
+<body>
+<a href="../"><i>Parent</i></a>
+<hr>
+<center>
+<h1>
+
+Libraries in the Information Age
+</h1>
+<p>
+
+David C. Martin, Cheong S. Ang, Marc E. Solomon, and
+Michael D. Doyle, Ph.D.
+<br>
+Library and Center for Knowledge Management
+<br>
+University of California, San Francisco
+</center>
+<h2>
+
+Introduction
+</h2>
+
+When the first digital computer network was developed approximately twenty
+years ago, its inventors had no idea that their creation would launch an
+information revolution with profound effect on everyday life.  The development
+of the Internet in the last ten years has made the wide distribution of
+information technically and economically feasible.  However, until very
+recently, there had been no means to provide ubiquitous and immediate access
+to complex multimedia data (e.g. text, image, audio, video, etc...) from the
+numerous emerging repositories.  The development of the national information
+infrastructure (NII), in conjunction with both public domain (e.g. the
+World-Wide-Web) and commercial (e.g. RightPages) software has enabled not only
+effective access to such data for every user, but has also provided the
+foundation of a means for more efficient and timely information exchange among
+scientists and researchers.  It is our firm belief that these emerging
+technologies hold the keys to the digital library, the library without
+walls.
+<p>
+
+As one of the nations leading medical libraries and a pioneer in digital
+information dissemination, the Library and Center for Knowledge Management
+(CKM) at the University of California, San Francisco (UCSF), has both
+collaborated with industry partners and developed prototype systems, to begin
+the realization of a knowledge management environment (KME) an environment
+that exploits the power of distributed hypermedia documents and distributed
+computational processing, integrating access to the entire universe of digital
+information.  Two specific research efforts are underway: the Red Sage Project
+and GALEN II prototyping.
+<h2>
+
+The Red Sage Project
+</h2>
+
+The published journal literature is an important method of conveying
+information, especially in the medical profession.  However, the volume of
+information that is being produced exceeds the ability of an individual to
+separate the wheat from the chaff.  Through the Red Sage Project, a
+collaborative effort founded by the UCSF Library and Center for Knowledge
+Management (CKM), AT&ampT Bell Laboratories and Springer-Verlag, we are
+exploring the electronic distribution of journals directly to individual
+physician and faculty computer desktops utilizing automated alerting based on
+user-interest profiles.  This experimental digital library provides
+high-resolution bit-mapped page images, gray-scale figures, article header
+information and the full-text of each article.
+<p>
+
+In 1992, the three partners agreed to proceed forward with an electronic
+journal project at the Red Sage restaurant in Washington, D.C. (hence the
+project name); AT&ampT providing the software, Springer-Verlag the content,
+and CKM providing the test-bed.  The primary goal of the Red Sage Project is
+to explore the technical, legal, economic, business, and social issues
+surrounding the delivery of scientific, technical, and medical information in
+a network environment.  To achieve this goal, a
+<i>
+critical mass
+</i>
+of content is required to make the system as appealing as possible to the
+target user community: the faculty, staff and students of UCSF and its
+affiliated institutions.  The content database has been expanded to include
+additional publishers including John Wiley and Sons, the Massachusettes
+Medical Society, and the American Medical Association, but is limited to three
+categories: radiology, molecular biology, and general, high-impact (including
+New England Journal of Medicine, JAMA, and Lancet).  These journals provide
+content of interest to the researcher, clinician and general reader.  The
+database consists of over sixty titles, from more than twenty publishers and
+will generally be available one to eight weeks prior to the receipt of printed
+equivalents critical when key information may drastically influence
+experimental and clinical programs.
+<p>
+<center>
+
+<img src="images/TopOfStacks.gif">
+<br>
+<i>
+RightPages client application displaying top of stacks.
+</i>
+
+</center>
+<p>
+
+The Red Sage Project has been assembled from a variety of sources.  The
+RightPages software from AT&amp;T, developed at the Bell Laboratory, provided
+the initial technology: a client/server model with a central server
+repository.  The client software is a graphical user-interface (GUI)
+application for UNIX, Macintosh and DOS computers under Motif(TM), the
+Macintosh Finder and Microsoft Windows GUI environments.  The RightPages
+server provides access to journal page images at the request of the client and
+manages content receipt, maintains user-profiles to determine applicable
+content and alerts users via electronic mail.  Journal content is accessed via
+a proprietary connection-based protocol that provides mechanisms to
+authenticate users, navigate the content hierarchy, query the text database,
+and select pages for viewing and printing.
+<p>
+
+A central super-minicomputer provides the data store for the journal content,
+computational support for the server processes that build, maintain and search
+content on behalf of client requests, and host processing for a number of
+directly supported access terminals. The current configuration is a four
+processor UNIX computer with forty-eight (48) G-bytes of magnetic disk and a
+340x1.3G-byte magneto-optical (MO) jukebox.  A hierarchical file system (HFS)
+maintains the most recently used content on the fastest media.
+<p>
+
+The main features of the system provide the user with a traditional library
+metaphor.  Scanned cover icons guide the user from titles to volumes to issues
+and finally to articles.  Articles are selected from the table of contents
+page via geographically defined active regions around each article listing.
+User page through each article, scrolling vertically and horizontally as
+necessary to view the entire page.  Pages are available in 72, 100 and 300
+dot-per-inch versions, allowing users to determine their reading comfort
+level, albeit with some increase in network transmission time.  Users may also
+search for specific articles, specifying title and date restrictions in
+addition to general Boolean full-text queries.  This same searching
+functionality may be used for alerting as well; allowing the system to
+identify articles of interest from newly arrived content.  Finally, users may
+optionally specify a list of subscribed titles requesting notification of new
+issues.  Users are alerted to new content, both subscriptions and alerts, via
+electronic mail.
+<p>
+
+The Library and Center for Knowledge Management is evaluating the RightPages
+system and the user communities reaction.  Statistics are being accumulated on
+usage and use patterns: e.g.  content alerts, search results, articles
+requested, subscription lists, pages viewed and pages printed.  In addition,
+software engineers within the Center for Knowledge Management are developing
+prototype client applications for both the Red Sage content and the burgeoning
+data available on the Internet.
+<h2>
+
+The GALEN II Prototypes
+</h2>
+
+The General Access Library Electronic Network (GALEN) is the exiting on-line
+information system deployed at the UCSF Library and Center for Knowledge
+Management.  This kiosk-style front-end provides access to a wide variety of
+electronic resources, including the Librarys on-line public access catalog
+(OPAC) and the University of Californias Division of Library Automation (DLA)
+MELVYL system.  This system has served the campus community for approximately
+2 years and during that time the information resources available outside the
+Librarys walls has increased in breadth, depth and complexity.  To provide
+users access to these new and exciting inter-network services requires the
+development of a new GALEN system; one providing access to all the services
+that make up the Internet horde, (i.e. FTP, WAIS, WWW, Gopher, Archie,
+Veronica, etc...), as well as growth for the information services of tomorrow.
+<p>
+<center>
+
+<img src="images/IntegratedAccess.gif">
+<br>
+<i>
+Integrated access to any inter-network service.
+</i>
+
+</center>
+<p>
+
+The Library and Center have worked in concert to develop alternatives to
+existing tools and design innovative new tools for network information
+discovery and retrieval.  The Center has utilized wide-area information
+servers (WAIS), the World-Wide-Web (WWW), and other freely available software
+to develop several interfaces, including an alternative to the RightPages
+client used in the Red Sage Project.  These prototype systems are being
+developed as demonstrations of the capabilities available to the campus
+faculty, staff and students and will be available during the planning phase of
+the GALEN II Project, involving representatives from through-out the campus.
+<p>
+
+The prototypes under active development at this time include an alternative
+RightPages client, a distributed visualization server (VIS), a Brookhaven
+Protein Data Bank (PDB) database with integrated three-dimensional imaging,
+and graphical interface to OPACs.  The prototype systems make use of WAIS to
+search full-text, POSTGRES to maintain bibliographic information, and the
+World-Wide-Web and Mosaic to provide the integration and user-interface.  The
+systems are searchable by title, author, abstract and medical subject headings
+(MeSH standard medical terminology defined by National Library of Medicine
+(NLM).
+<p>
+<center>
+
+<img src="images/Prototype.gif">
+<br>
+<i>
+GALEN II Prototypes: volume rendering, proteins, published literature.
+</i>
+
+</center>
+<p>
+
+The Center is also exploring the technical feasibility of using Mosaic and WWW
+to integrate access between the published journal literature from the Red Sage
+Project with the developing monolithic datasets of biomedically-relevant
+structure information.  Such datasets generally share the common
+characteristic of requiring sophisticated visualizations tools for browsing,
+searching and analysis.  The Visible Human Project, the Visible Embryo
+Project, the Brain Mapping Project, the Human Genome Project and other massive
+research efforts are producing increasingly monolithic databases that defy
+routine data exploration and interpretation.
+<p>
+
+The task of integrating access to such massive information and computational
+resources is nontrivial.  One embryo, of the more than 650 serially sectioned
+specimens in the Visible Embryo Project, yields as much as a terabyte of
+anatomical volume data (n.b. 20mm specimen, sectioned at 5 microns and
+digitized at 8000x8000 pixels/section and 36 RGB bits/pixel yields 1.073
+T-bytes).  Clearly no single workstation or supercomputer can manipulate,
+process and analyze such a dataset as a single unit, much less perform
+computational operations on a database of embryos.  The Center has developed
+tools that allow integrated, ubiquitous access (through NCSAs Mosaic) to
+network visualization servers that can distribute the computational load
+across a loosely-coupled network of both general purpose and specialized
+graphic workstations and supercomputers.  Therefore text, images, audio,
+video, and real-time interactive visualizations may be embedded within
+hyperdocuments located anywhere on the network.  We are also exploring the use
+of this technology for delivering interactive virtual reality (VR) across the
+Internet.  The success of these efforts will allow wide-spread access to
+highly accurate and complex simulations of human development, non-invasive
+surgery, and other VR applications via inexpensive workstations and personal
+computers. 
+<h2>
+
+Conclusion
+</h2>
+
+As our work demonstrates, the library of tomorrow will bear little resemblance
+to the library of today.  Collections will no longer be limited to print and
+other types of static information; most collections will include a combination
+of raw scientific data, electronic journals and books, interactive
+instructional textbooks, digitized video and audio, and other types of
+hypermedia.  With the development of ubiquitous client applications, common
+frameworks for accessing the information stored across the Internet, and the
+national information infrastructure, the essential elements of the library
+without walls are already in place.  Imagine a researcher viewing electronic
+journals from the UCSF Library, searching National Library of Medicine
+catalog, visualizing a stereographic image of a six-week embryo via
+supercomputers in Urbana, Illinois, and conversing with a colleague in the
+suburbs of Los Angeles all while at home in San Jose, California.
+</body>
+<script type="text/javascript" id="clustrmaps" src="//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&d=QDiFgwsFQJOnRLFA8OFfn2F1iWzaDy13S-UaMbYEh1A"></script>
+</html>

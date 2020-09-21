@@ -1,0 +1,681 @@
+Constituent Component Interface++ -- CCI++                C. S. Ang
+University of California - San Francisco                D.C. Martin
+
+Constituent Component Interface++ -- CCI++
+
+Status of this Memo
+
+This document is an Internet-Draft style protocol compiled at the
+Center for Knowledge Management at the University of California,
+San Francisco.
+
+Internet-Drafts are draft documents valid for a maximum of six
+months and may be updated, replaced, or obsoleted by other
+documents at any time. It is inappropriate to use Internet- Drafts
+as reference material or to cite them other than as "work in
+progress."
+
+Distribution of this document is unlimited. Please send comments to
+the authors at dcmartin@c... and cheong@c....
+
+Abstract
+
+The Constituent Component Interface++ (CCI++) is an application-
+level protocol to support integrated presentation of structured
+hypermedia documents.  A practical hypermedia user agent (HMUA)
+requires support for a wide variety of data types, presentation
+techniques and access protocols.  CCI++ provides a basis to build
+cooperative suites of small applications that work in concert to
+produce an integrated presentation of information retrieved from
+network accessible resources. Component applications extend both
+the presentation and access repertoire of a hypermedia user agent
+by providing content-type support (e.g. PostScript=99) as well as
+protocol support (e.g. NNTP).
+
+CCI++ was first named the Distributed Hypermedia Object Embedding
+(DHOE) Protocol [1] and was used in a distributed compound object
+system in late 1993 to integrate texts, movies, images, and 3D
+object data, resided on various sites of a network via a two-way
+messaging mechanism between the compound object container (browser)
+and the object handlers.  The original DHOE Protocol has then been
+modified to free the protocol from X Window System dependence and
+this specification reflects preferred usage of the protocol.
+
+Table of Contents
+
+1.   Introduction
+     1.1  Purpose
+     1.2  Overall Operation
+2.   Notational Conventions and Generic Grammar
+3.   CCI++ Message
+4.   Usage of RFC 822 and MIME Constructs
+5.   Request
+     5.1  Request-Line
+     5.2  Method
+          5.2.1     GET
+          5.2.2     POST
+          5.2.3     DISPLAY
+          5.2.4     SEND
+          5.2.5     DISCONNECT
+          5.2.6     QUIT
+          5.2.7     CONFIGURE
+          5.2.8     EVENT
+          5.2.9     UPDATE
+6.   Response
+     6.1  Status-Line
+     6.2  CCI++ Version
+     6.3  Status Codes and Reason Phrases
+          6.3.1     Successful 2xx
+          6.3.2     Redirection 3xx
+          6.3.3     Client Error 4xx
+          6.3.4     Server Errors 5xx
+7.   References
+
+1.  Introduction
+
+1.1  Purpose
+
+The Constituent Component Interface++ (CCI++) is an application-
+level protocol to support integrated presentation of structured
+hypermedia documents.  A practical hypermedia user agent (HMUA)
+requires support for a wide variety of data types, presentation
+techniques and access protocols.  CCI++ provides a basis to build
+cooperative suites of small applications that work in concert to
+produce an integrated presentation of information retrieved from
+network accessible resources. Component applications extend both
+the presentation and access repertoire of a hypermedia user agent
+by providing content-type support (e.g. PostScript=99) as well as
+protocol support (e.g. NNTP).
+
+CCI++ is based on the de facto standards for resource reference
+(Universal Resource Identifier - URI) [2], location (Universal
+Resource Locator - URL) [3], name (Universal Resource Name - URN)
+[4]; access protocol (Hypertext Transfer Protocol - HTTP); content-
+type and format specification (Multipurpose Internet Mail
+Extensions - MIME) [4]; and document structure (Hypertext Markup
+Language - HTML).  CCI++ was first termed Distributed Hypermedia
+Object Embedding (DHOE) and was used in a open and distributed
+compound object system in late 1993 to integrate text, movies,
+images, and 3D object data from a variety of network servers [1].
+
+Note that since CCI++ is derived from CCI and HTTP, it adopts most
+of the conventions, rules and characteristics of CCI and HTTP, and
+this document is compiled based on the HTTP/1.0 draft.
+
+1.2  Overall Operation
+
+The CCI++ protocol is based on a request/response paradigm.  Each
+participating CCI++ application sends and receives messages
+asynchronously in communication with a hypermedia user agent
+(HMUA).  The HMUA initiates all cooperating applications and
+manages the presentation of the integrated hypermedia document.  A
+requesting program (termed a client) establishes a connection with
+a receiving program (termed a server) and sends a request to the
+server in the form of a request method, URI, and protocol version,
+followed by a MIME-like message containing request modifiers,
+client information, and possible body content. The server responds
+with a status line (including its protocol version and a success or
+error code), followed by a MIME-like message containing server
+information, object meta-information, and possible body content. It
+should be noted that a given program may be capable of being both a
+client and a server; our use of those terms refers only to the role
+being performed by the program during a particular connection,
+rather than to the program's purpose in general.
+
+On the Internet, the communication generally takes place over a
+TCP/IP connection. The default port is TCP 8000, but other ports
+can be used. This does not preclude the CCI++  protocol from being
+implemented on top of any other protocol on the Internet, or on
+other networks. The mapping of the CCI++  request and response
+structures onto the transport data units of the protocol in
+question is outside the scope of this specification.
+
+For the current implementation, the client establishes connection
+to the server listening on a given port, and the connection is kept
+alive until the service is no longer needed.  However, this is not
+a feature of the protocol and is not required by this
+specification. Both clients and servers must be capable of handling
+cases where either party closes the connection prematurely, due to
+user action, automated time-out, or program failure. In any case,
+the closing of the connection by either or both parties always
+terminates the current request, regardless of its status.  Although
+not explicitly stated in the protocol, a client (e.g. browser)
+usually acquires the locations of various available servers, either
+through start-up resources, or from another server.  A client may
+also launch the server as a data handler to decipher the data types
+it is unable to handle.
+
+Each HMUA supports an inherent set of data types (e.g. only MIME
+content-types =93text/html=94 and =93image/gif=94 are supported by NCSA
+Mosaic) and an inherent set of protocols; other types and procotols
+are supported through helper applications and gateways.  However,
+helper applications are not integrated with the browser and gateway
+functionality is dependent on the existence of a gateway server.
+The CCI procotol extends the HMUA with support for abitrary data
+types and access protocols.
+
+The HMUA initiates a CCI++ connection with a locally defined
+application whenever a server responds with a non-inherent content-
+type.  The local application may simply translate the format (e.g.
+=93image/jpeg=94 to =93image/gif=94), acting as a local filter, or it may
+present a control panel and allow the user to control the
+integrated presentation of the resource (e.g. an =93image/mpeg=94 movie
+viewer).  In addition to content-types, the HMUA also may launch a
+local application when attempting to access a resource via a non-
+inherent protocol.
+
+Example:
+
+     1. Mosaic requests URL http://<server>/<opaque>
+     2. HTTP server responds with a content-type of
+=93application/pdf=94
+     3. Mosaic launches local application to handle Adobe PDF
+format
+     4. PDF helper application returns =93text/html=94 content to
+Mosaic:
+          <HTML>
+          <HEAD>
+          <TITLE>CCI Protocol</TITLE>
+          </HEAD>
+          <BODY>
+          <A HREF=3D=93http://<server>/<opaque>=94>
+          <IMG SRC=3D=93CCI%20Protocol/Page1=94 ISMAP>
+          </A>
+          </BODY>
+          </HTML>
+          5. Mosaic displays the content with the mapped image
+     6. User clicks on mapped image
+     7. Mosaic informs local application of requested resource:
+          301 GET http://<server>/<opaque>?301,402
+     8. Local application interprets URL and sends content to
+Mosaic
+
+For the current implementation, the client establishes connection
+to the server listening on a given port, and the connection is kept
+alive until the service is no longer needed.  However, this is not
+a feature of the protocol and is not required by this
+specification. Both clients and servers must be capable of handling
+cases where either party closes the connection prematurely, due to
+user action, automated time-out, or program failure. In any case,
+the closing of the connection by either or both parties always
+terminates the current request, regardless of its status.  Although
+not explicitly stated in the protocol, a client (e.g. browser)
+usually acquires the locations of various available servers, either
+through start-up resources, or from another server.  A client may
+also launch the server as a data handler to decipher the data types
+it is unable to handle.
+
+2.  Notational Conventions and Generic Grammar
+
+Please refer to the HTTP/1.0 draft for information about Augmented
+BNF and basic rules.
+
+3.  CCI++ Message
+
+CCI++ messages consist of requests from client to server and
+responses from server to client.
+
+     CCI++-message       =3D Simple-Request
+                    | Simple-Response
+                    | Full-Request
+                    | Full-Response
+
+Full-Request and Full-Response use the generic message format of
+RFC 822 [5] for transferring objects. Both messages may include
+optional header fields (a.k.a. "headers") and an object body. The
+object body is separated from the headers by a null line (i.e., a
+line with nothing preceding the CRLF).
+
+4.  Usage of RFC 822 and MIME Constructs
+
+Like HTTP/1.0, CCI++ reuses many of the constructs defined for
+Internet Mail (RFC 822, [5]) and the Multipurpose Internet Mail
+Extensions (MIME, [4]) to allow Object's to be transmitted in an
+open variety of representations.  Please refer to the HTTP/1.0
+draft for the constraints HTTP/1.0 does not obey, and further
+information about various formats and types.
+
+5. Request
+
+A request message from a client to a server includes, within the
+first line of that message, the method to be applied to the object
+requested, the identifier of the object, and the protocol version
+in use. For backwards compatibility with the more limited HTTP/0.9
+protocol, there are two valid formats for an HTTP request:
+
+     Request        =3D    Simple-Request | Full-Request
+
+     Simple-Request =3D    "GET" SP URI CRLF        ; HTTP/0.9
+request
+
+     Full-Request   =3D    Request-Line        ; see Section 5.1
+                         General-Header      ; see Section 4.3
+                         Request-Header      ; see Section 5.5
+                         Object-Header       ; see Section 7
+                         CRLF
+                         [ Object-Body ]          ; see Section 3.2
+
+If an CCI++ server receives a Simple-Request, it must respond with
+an CCI++ Simple-Response. Similarly, if a client receives a
+response that does not begin with a Status-Line, it should assume
+that the response is a Simple-Response and parse it accordingly.
+
+Please refer to HTTP/1.0 draft for detailed information about
+different types of requests as well as definitions and formats of
+version information, URI, and request header fields.
+
+5.1  Request-Line
+
+The Request-Line begins with a method token, followed by the URI
+and the protocol version, and ending with CRLF. The elements are
+separated by SP characters. No CR or LF are allowed except in the
+final CRLF sequence.
+
+     Request-Line   =3D Method SP URI SP HTTP-Version CRLF
+
+5.2  Method
+
+The Method token indicates the method to be performed on the
+resource identified by the URI. The method is case-sensitive and
+extensible.
+
+     Method         =3D "GET" | "DISPLAY" | "POST"
+                    | "SEND" | "DISCONNECT" | "QUIT"
+                    | "CONFIGURE" | "EVENT" | "UPDATE"
+                    | extension-method
+     extension-method=3Dtoken
+
+Note that all CCI methods are kept for backward compatibility.
+Those methods which not available in CCI are CONFIGURE, EVENT, and
+UPDATE.
+
+The methods SEND, DISCONNECT, CONFIGURE, EVENT, UPDATE, must be
+supported by all conforming CCI++ servers. The list of methods
+acceptable by a specific resource can be specified in an "Allow"
+Object-Header (HTTP/1.0 draft Section 7.1). However, the client  is
+always notified, through the return code of the response, whether
+a method is currently allowed on a specific resource, as this can
+change dynamically. The set of common methods for CCI++ is
+described below. Although this set can be easily expanded,
+additional  methods cannot be assumed to share the same semantics
+for separately  extended clients and servers. Servers should return
+the Status-Code  "501 Not Implemented" if the method is unknown.
+
+5.2.1 GET
+
+GET ( URL | URN ) <url> [ OUTPUT ( CURRENT | NEW | NONE ) ]
+
+As in HTTP, the GET command tells the browser to resolve the given
+URL.  The resulting object will be either be displayed by the
+browser (when the output option is CURRENT or NEW) or returned to
+the external application that issued the request (when output
+option is NONE).  Location of where the output is displayed is
+optional with the default being the current window.
+
+If the output option NONE is specified then the URL will not be
+displayed by the browser, rather it will be returned directly to
+the external application.  This allows an external program which
+does not understand HTTP to use the browser for data retrieval.
+
+5.2.2 POST
+
+POST <host>:<port>
+Content-Length: (length of MIME body)
+..MIME body...
+
+The POST command tells the browser to forward the following MIME
+body to the specified HTTP server (<host>:<port>).  It serves the
+original purposes of the POST method in HTTP:
+
+   o  Annotation of existing documents;
+
+   o  Posting a message to a bulletin board topic, newsgroup,
+mailing list, or similar group of articles;
+
+   o  Providing a block of data (usually a form) to a data-handling
+process, or a script which can be run by such a process;
+
+   o  Extending a document during authorship.
+
+A successful POST does not require that the object be created as a
+resource on the origin server or made accessible for future
+reference. That is, the action performed by the POST method might
+not result in a resource that can be identified by a URI. In this
+case, a "200 OK" is the appropriate Status-Code returned in the
+response. If a resource has been created, "201 Created" should be
+the response.
+
+Note: The user agent may not assume any postconditions of the
+method in terms of web topology. For example, if a POST is
+accepted, the effect may be delayed or overruled by human
+moderation, batch processing, etc. The user agent should not rely
+on the resource being immediately (or ever) created.
+
+5.2.4 SEND
+
+The SEND method is used to transmit information from the external
+application to the browser and vice-versa.  To be backward
+compatible with CCI, this method has several variations:
+
+(a) SEND DATA
+
+SEND DATA [ ( CURRENT | NEW ) ]
+Content-Type: data type
+Content-Length: (length of data body)
+..MIME body...
+
+The SEND DATA command transmits data from the external application
+to the browser which then displays the data.  The data message
+begins following the <CRLF> after the Content-Length line.
+
+The optional output (CURRENT|NEW) suggests to the browser where to
+display the document.  With the CURRENT option, the document should
+appear in the active window, while NEW would specify that a new
+window should be created to display the data. If output is not
+specified the default is to display in the current active window.
+
+(b) SEND ANCHOR
+    SEND ANCHOR STOP
+
+This message informs the browser to send all activated URL anchors
+to the external application.  The browser is intended to continue
+sending activation messages until a SEND ANCHOR STOP message is
+sent.  Output from the browser to the external application will be:
+
+     301 ANCHOR <url>
+
+(c) SEND OUTPUT <type>
+    SEND OUTPUT STOP <type>
+
+This message informs the browser to send all subsequent objects
+with the specified MIME <type> to the external application. The
+recipient will then be responsible for displaying the output.
+
+Output from the browser.
+
+     306 Viewer output
+     Content-Type: data type
+     Content-Length: (length of data body)
+     ... data body ...
+
+5.2.5 DISCONNECT
+
+In CCI, this method notifies the browser that connecting
+applications will be exiting.  CCI++ requires the external
+application to understand this command as well (e.g. the browser
+may try to shutdown the connection when it is being manually
+terminated by a user).
+
+5.2.6 QUIT
+
+In CCI, this request tells the browser to shutdown.  It is intended
+for clean up when the browser is used as a slave process and the
+master application is exiting or will no longer be using the
+browser.  QUIT will also be used for the browser to shutdown the
+external application in CCI++ because in a distributed compound
+document system, the user interacts primarily with the browser, and
+the browser should be able to terminate the external application or
+data handler when it no longer needs the particular type of data-
+handling service.
+
+5.2.7 CONFIGURE
+
+CONFIGURE is used by the external application to inform the browser
+of specific actions of which it wishes to be informed.  It has the
+following forms:
+
+(a)  CONFIGURE EVENT CLEAR ( BUTTON | KEY | AREA | ALL )
+     CONFIGURE EVENT ( ADD | REMOVE ) ( BUTTON | KEY | AREA ) <p>
+<ap>
+
+CONFIGURE EVENT is used by an external application to inform the
+browser of the event(s) in which it is interested; the optional
+CLEAR token is used for reset. The type, parameter, and
+additional_parameter can be one of the following:
+
+type           parameter                additional parameter
+=3D=3D=3D=3D           =3D=3D=3D=3D=3D=3D=3D=3D=3D               =
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+BUTTON         ( UP  | DOWN | MOTION )       <button code>
+KEY            ( UP  | DOWN )           <key code>
+AREA           ( EXPOSE
+               | HIDE
+               | DESTROY
+               | RESIZE
+               | ENTER
+               | LEAVE )
+
+Output may be:
+
+     200  OK   ; events successfully cleared or registered
+
+Any registered events that occur subsequent to the CONFIGURE EVENT
+request will be sent to the external application asynchronously.
+For BUTTON and KEY events, modifier information is included in the
+message; allowable modifier states are: SHIFT, CAPS, CONTROL, and
+META.  Output may be:
+
+     306 Viewer event
+     AREA EXPOSE
+     306 Viewer event
+     BUTTON DOWN 1 SHIFT META
+     306 Viewer event
+     KEY DOWN c CONTROL
+     306 Viewer event
+     BUTTON MOTION 200 300 SHIFT META
+
+(d) CONFIGURE METHOD ( GET | POST | PUT ) ( NOTIFY | START | STOP )
+
+CONFIGURE METHOD is used by an external application to capture the
+browser's actions on different anchor events.  The external
+application can choose to be simply notified or to have complete
+control (i.e. stop the browser from processing all anchor events)
+over all anchor events.  The anchor events are forwarded  to the
+external application until it issues a STOP command of the same
+type.
+
+type           additional_parameter
+=3D=3D=3D=3D           =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+GET            NOTIFY, START, or STOP
+POST           NOTIFY, START, or STOP
+PUT            NOTIFY, START, or STOP
+
+Output may be:
+
+     307 Viewer method
+     GET URL http://www.foo.com/blech?200,300
+     307  Viewer method
+     POST URL nntp://news.foo.com/comp.infosystems?follow-up-
+to=3D1234
+     Content-type: body type
+     Content-length: (length of MIME body)
+     ... MIME body...
+
+5.2.8 EVENT
+
+The EVENT method is designed for the browser to send the event(s)
+an external application is interested in when it/they occur(s).
+
+e.g. EVENT CLIENT_AREA DESTROYED
+     EVENT KEY_UP XK_p
+     EVENT BUTTON_MOVE 3
+
+5.2.9 UPDATE
+
+The UPDATE command tells the data handler/browser to give the most
+up-to-date output (e.g. recompute when there is a GUI state change
+or refresh when the image in the drawing area window does not
+correspond to that in the buffer).
+
+6.  Response
+
+If the client has issued a CCI++ request, the response from the
+server shall consist of the following:
+
+    Response       =3D Simple-Response | Full-Response
+
+    Simple-Response=3D [Object-Body]
+
+    Full-Response  =3D Status-Line              ; see Section 6.1
+                     *General-Header          ; see Section 4.3
+                     *Response-Header         ; see Section 6.4
+                     *Object-Header           ; see Section 7
+                     CRLF
+                     [ Object-Body ]          ; see Section 3.2
+
+6.1  Status-Line
+
+The Status-Line consists of the protocol version followed by a
+numeric status code and its associated textual phrase, with each
+element separated by SP characters. No CR or LF is allowed except
+in the final CRLF sequence.
+
+    Status-Line =3D CCI++-Version SP Status-Code SP Reason-Phrase
+CRLF
+
+6.2  CCI++ Version
+
+The CCI++-Version element identifies the protocol version being
+used by the server. The format of this field is identical to the
+corresponding HTTP-Version field in the Request-Line described in
+HTTP/1.0 draft Section 5.3.
+
+6.3  Status Codes and Reason Phrases
+
+The Status-Code element is a 3-digit integer result code of the
+attempt to understand and satisfy the request. The Reason-Phrase is
+intended to give a short textual description of the Status-Code.
+The Status-Code is intended for use by automata and the Reason-
+Phrase is intended for the human user. The client is not required
+to examine the Reason-Phrase, nor to pass it on to the human user.
+
+    Status-Code    =3D 3DIGIT
+
+    Reason-Phrase  =3D token *( SP token )
+
+All responses, regardless of the Status-Code, may contain an Object-
+Header and/or an Object-Body. This can either be the object pointed
+to by the requested URI or an object containing further explanation
+of the Status-Code. In the latter case, the preferred media type is
+"text/html", but "text/plain" is also acceptable.
+
+The first digit of the Status-Code defines the class of responses
+known to HTTP. The last two digits do not have any categorization
+role. There are 5 values for the first digit:
+
+   o  1xx: Not used, but reserved for future use
+
+   o  2xx: Success - The requested action was successfully received
+and understood
+
+   o  3xx: Redirection - Further action must be taken in order to
+complete the request
+
+   o  4xx: Client Error - The request contains bad syntax or is
+inherently impossible to fulfill
+
+   o  5xx: Server Error - The server could not fulfill the request
+
+The values of the numeric status codes and an example set of
+corresponding Reason-Phrase's are presented below. Every Status-
+Code has a description of which method it can follow and any
+metainformation required in the HTTP-header (refer to HTTP/1.0
+draft).
+
+6.3.1 Successful 2xx
+
+This class of status codes indicates that the client's request was
+successfully received and understood.
+
+200 OK
+201 Created
+202 Accepted
+
+Please refer to HTTP/1.0 draft for detailed information about the
+2xx class messages (and messages 203-206).
+
+6.3.2 Redirection 3xx
+
+This class of status codes indicates that further action needs to
+be taken by the client/external application in order to fulfill
+the request.
+
+CCI++ may not need all the redirection messages (301-304) in
+HTTP/1.0, interested readers may refer to HTTP/1.0 draft for
+further details.
+
+305 Acceptable options
+
+This is required by CCI++ for negotiation between the browser and
+an external application.
+
+6.3.3 Client Error 4xx
+
+The 4xx class of status codes is intended for cases in which the
+client seems to have erred. The codes can follow any method
+described in Section 5.2, and the set consists of:
+
+400 Bad Request
+401 Unauthorized
+402 Payment Required
+403 Forbidden
+404 Not Found
+405 Method Not Allowed
+406 None Acceptable
+407 Proxy Authentication Required
+408 Request Timeout
+
+Please refer to HTTP/1.0 draft for detailed information about the 5
+class messages.
+
+6.3.4 Server Errors 5xx
+
+Response status codes beginning with the digit "5" indicate cases
+in which the server is aware that it has erred or is incapable of
+performing the request. These codes can follow any method at any
+time.
+
+Note: For all of the 5xx codes, the server is encouraged to send
+back a CCI++-header and an Object-Body containing an explanation of
+the error situation, and whether it is a temporary or permanent
+condition.
+
+500 Internal Server Error
+501 Not Implemented
+502 Bad Gateway
+503 Service Unavailable
+504 Gateway Timeout
+
+Please refer to HTTP/1.0 draft for detailed information about the
+5xx class messages.
+
+6.4  Response Header Fields
+
+Please refer to HTTP/1.0 draft.
+
+7. References
+
+[1]  C. Ang, D. Martin, M. Doyle.  "Integrated Control of
+Distributed Volume Visualization through the World-Wide-Web." IEEE
+Visualization '94 Conference Proceedings, 13-20, October 1994.
+<URL: http://128.218.33.80/public/Projects/Applets/Abstract.html>
+
+[2]  T. Berners-Lee.  "Universal Resource Identifiers in WWW: A
+Unifying Syntax for the Expression of Names and Addresses of
+Objects on the Network as used in the World-Wide Web." RFC  1630,
+CERN, <URL:http://ds.internic.net/rfc/rfc1630.txt,>  June 1994.
+
+[3]  T. Berners-Lee, L. Masinter, and M. McCahill.  "Uniform
+Resource  Locators (URL)." Internet-Draft (work in progress), CERN,
+Xerox  PARC, University of Minnesota, <URI:http://ds.internic.net/
+internet-drafts/draft-ietf-uri-url-08.txt>, October 1994.
+
+[4]  N. Borenstein and N. Freed.  "MIME (Multipurpose Internet Mail
+Extensions) Part One: Mechanisms for Specifying and Describing  the
+Format of Internet Message Bodies." RFC 1521, Bellcore,  Innosoft,
+<URL:http://ds.internic.net/rfc/rfc1521.ps,>  September 1993.
+
+[5]  D. H. Crocker.  "Standard for the Format of ARPA Internet Text
+Messages." STD 11, RFC 822, UDEL,
+<URL:http://ds.internic.net/rfc/rfc822.txt,> August 1982.

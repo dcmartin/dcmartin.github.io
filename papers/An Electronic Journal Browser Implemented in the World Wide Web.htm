@@ -1,0 +1,612 @@
+
+<HTML>
+
+<head>
+<BASE HREF="http://www.ncsa.uiuc.edu/SDG/IT94/Proceedings/MedTrack/salomon/salomon.html">
+<TITLE>
+An Electronic Journal Browser Implemented in the World Wide Web
+</TITLE>
+ <LINK> 
+</HEAD>
+<BODY>
+<p><font face="Arial Narrow"><i><a href="http://dcmartin/Papers/Index.html">Parent</a></i></font></p>
+<hr>
+<H1><font face="Arial Narrow">An Electronic Journal Browser Implemented in the World Wide Web</font></H1>
+<p>
+<p>
+<p align="center" style="text-indent: 0; word-spacing: 0; line-height: 100%; margin: 0">
+<font face="Arial Narrow">
+Marc E. Salomon, B.A.</font>
+<p align="center" style="text-indent: 0; word-spacing: 0; line-height: 100%; margin: 0">
+<font face="Arial Narrow">
+David C. Martin, M.S.</font>
+<div align="center">
+  <center>
+<pre><font face="Arial Narrow"><font size="3">
+The University of California, San Francisco
+<A HREF="http://www.library.ucsf.edu/">Center for Knowledge Management</a>
+Innovative Software Systems Group
+San Francisco, California 94143-0840
+</font>
+
+<font size="3"><i>Abstract </i>
+</font>
+</font></pre>
+  </center>
+</div>
+<font face="Arial Narrow">
+The networked delivery of medical journal content along with innovative 
+presentation of associated abstracting and indexing data presents new issues 
+for the evolving digital library. This paper examines some of the strategies 
+deployed towards the development of a 
+<A HREF="http://info.cern.ch/hypertext/WWW/TheProject.html">World Wide Web </a>
+client for the 
+<A HREF="http://www.library.ucsf.edu/www/public/CKM/ISSG/Projects/RedSage/Abstract.html">
+Red Sage </a> project in <A HREF="http://www.att.com/">AT&amp;T's</a>  
+<A HREF="http://www.library.ucsf.edu/www/public/CKM/ISSG/Projects/RedSage/Overview.html">RightPages</a> 
+electronic journal browsing project using freely redistributable networked 
+information discovery and retrieval tools available in the public domain. Work 
+focused on the development of a suite of <A HREF="http://hoohoo.ncsa.uiuc.edu/cgi/overview.html">HTTPD-server-side </a>
+<A HREF="http://www.cis.ufl.edu:80/perl/">Perl </a> <A HREF="http://hoohoo.ncsa.uiuc.edu/cgi/overview.html">scripts </a>to navigate the 
+file system data tree, bibliographic information acquisition schemes, and 
+<A HREF="http://www.wais.com/">WAIS</a> indexes. Scanned TIFF page images as 
+well as OCR data are provided by AT&amp;T. Abstract and indexing information 
+is retrieved from  <A HREF="http://www.nlm.nih.gov/">NLM's (National Library 
+of Medicine) </A>
+<A HREF="http://www.nlm.nih.gov/factsheets.dir/medline_use.html">MEDLINE </a>
+index of health sciences articles. The scanned text and the MEDLINE records 
+are indexed by the <A HREF="http://www.cnidr.org/cnidr_projects/freewais.html">
+freeWAIS </a>full-text indexer both on a collection-wide basis as well as 
+per-journal. In addition, the NLM authorized 
+<A HREF="ftp://nlmpubs.nlm.nih.gov/nlminfo/factsheets/mesh.txt">
+Medical Subject Headings </a>are extracted from the MEDLINE records and 
+separately indexed to provide an interface to the search engine. The resulting 
+search scheme provides both manual entered term searching as well as authorized 
+term searching. 
+<A HREF="http://www.library.ucsf.edu/WWW_2_94/searchresults">
+Search results </a>provide extended bibliographic data along with an 
+interface to search the authorized terms for each article and a hypertext link 
+directly to the scanned text images for that article. The 
+<A HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">NCSA HTTP daemon </a>
+was modified to include code from the UNIX 
+<A href="http://www.bsdi.com/bsdi-man/?file%28%29">file(1)</a> in order to 
+determine the content type from the actual data in the file instead of relying 
+on the file extension, which is not descriptive as provided by AT&amp;T. A 
+<A HREF="ftp://ftp.library.ucsf.edu/pub/util/Mosaic-tiff/">graphical WWW client capable of displaying TIFF images </a>is required to use the system.</font> 
+<p>
+<h2><font face="Arial Narrow">1.	Introduction</font>	</H2>
+<font face="Arial Narrow">
+	With the rapid increase in computer processor speed, data storage capacity and network band-width, 
+the academic research library is poised to emerge from its formerly limited role as centralized repository for 
+print material to move toward a more ubiquitous presence as a provider of knowledge management tools 
+<A HREF="http://www.library.ucsf.edu/public/Papers/KnowledgeMgt/RefiningRoles/RefiningRoles.html">[Lucier 90]</a>.  The changes that libraries face in moving from a paper collection towards a center for 
+information dispersal are similar to those faced by publishers, whose entire modus operandi is challenged 
+by the migration from paper-based information dissemination in favor of electronic content delivery.  
+Towards working through some if these novel issues, the University of California, San Francisco, in 
+collaboration with AT&amp;T and publisher Springer-Verlag, have implemented the Red Sage on-line journal 
+delivery project.</font>
+<p>
+<h3><font face="Arial Narrow">1.1.	Red Sage Project</font></h3>
+<font face="Arial Narrow">
+	Based on AT&amp;T's RightPages<TM> client-server journal browsing system, the Red Sage collection 
+comprises approximately 60 journal titles.  The publishers supply AT&amp;T with the paper instances of each 
+journal issue or scanned TIFF images.  AT&amp;T produces a set of variable magnification TIFF image scans 
+of each page, a set of bounding box coordinates for critical elements on the page, as well as the output of an 
+OCR for each page in the form of horizontal and vertical positioning information for the box that bounds 
+the element.  The browser is a  MOTIF<TM> graphical user interface client which communicates with a server 
+using the Internet TCP/IP network protocol suite.  The server manages the data store of TIFF images and 
+provides an interface to the Slimmer<TM> full-text database.</font>
+<p>
+<h3><font face="Arial Narrow">1.2.	WWW Red Sage Server</font> </h3>
+<font face="Arial Narrow">
+	Since the influx of content is regular and constant, one priority in the development of the World 
+Wide Web (WWW) Red Sage server was to keep the maintenance of HyperText Markup Language (HTML) 
+pages to a minimum, thus the reliance on the HTML-generating server-side Common Gateway Interface 
+(CGI) <A HREF="http://hoohoo.ncsa.uiuc.edu/cgi/overview.html">[McCool 94a]</a> Perl scripts to ensure the highest level of confidence in the results.  At each level in 
+the stack, from the level of journals in the collection down through the journal-specific levels such as year, 
+volume issue and article, the server-side CGI scripts examine the on-line available content and produce 
+HTML  that reflects actual, not theoretical content thereby all but eliminating faulty links.</font>
+<p>
+    <font face="Arial Narrow">
+	Another goal was to reproduce the functionality of the AT&amp;T product completely.  As far as 
+browsing, we have provided the user with equivalent functionality for navigating journals, years, volumes, 
+issues, pages, articles, stacks and figures.  The freeWAIS-based full-text search system performs comparably 
+to the Red Sage Slimmer database, while the MeSH search capability performs favorably with the AT&amp;T 
+search engine while providing enriched functionality to essential to our patron community of biomedical 
+researchers.  We have delayed implementation of the alerting feature of the AT&amp;T product, but have 
+succeeded in integrating the content into a WWW client for the University of California's MELVYL 
+bibliographic system.</font>
+<p>
+<h3><font face="Arial Narrow">1.3.	WAIS Indexing</font></h3>
+<font face="Arial Narrow">
+	We employ the WAIS full-text indexer and search engine to provide term searching for the system.  
+The error-prone OCR text provided by AT&amp;T is stripped of its positioning information and combined with 
+a MEDLINE record if available.  Not all journals are indexed by the National Library of Medicine (NLM), 
+so coverage is lacking in some cases.   Each HTML page generated at all levels contains a hypertext link to 
+the search page.  We also build WAIS indexes from the combined MEDLINE record and OCR text on a per-
+journal basis, and the user is allowed to specify a set of journals on which to search as well as perform a 
+full-text search across the entire collection.  When the MEDLINE record is available, we extract the MeSH 
+terms that are a vocabulary of authorized terms sanctioned by the NLM and build a WAIS index of just 
+those terms, weighting terms deemed particularly important by the indexers.  In order for the user to enter 
+the authorized term, we create a set of webs that allow access to the MeSH term for searching through an 
+alphabetic approach or by exploiting (to a limited degree) the hierarchical nature of the Medical Subject 
+Headings.  In each case, the final selection is used as input to the searching routines and the results of the 
+MeSH WAIS search are returned as any other WAIS search result set.</font>
+<p>
+<h3><font face="Arial Narrow">1.4.	MELVYL/Red Sage Client</font></h3>
+<font face="Arial Narrow">
+	One goal of the Center for Knowledge Management is to create a seamless interface to the various 
+Internet resources of interest to the biomedical academic research community.  To that end, we have sought 
+to integrate existing resources so that the distinctions between this prototype project and well-tested and 
+used resources, such as the University of California System's Division of Library Automation's (DLA) 
+MELVYL bibliographic indexing system are minimal.  We have developed a prototype system allows the 
+user to enter a bibliographic search to the DLA's MEDLINE database through an HTML form, with the 
+result set presented to the user as a set of HTML enriched MEDLINE records that include hypertext links to 
+the TIFF page images of any results from the search that have content  in the Red Sage collection.</font>
+<p>
+<h3><font face="Arial Narrow">1.5.	Further Research</font></h3>
+<font face="Arial Narrow">
+	As any new technology is first deployed, at least as many questions are posed as are answered by 
+the research and implementation.  In this case, the limitations of the current versions of HTTP (HyperText 
+Transfer Protocol) and HTML, designed for near-interactive information interchange between researchers in 
+rapidly evolving fields have begun to manifest themselves as that technology is applied as a production 
+information presentation protocol.  In addition, in reexamining the RightPages system and the limitations 
+of AT&amp;T's product (if any) present opportunities for further research and development.  The remainder of 
+this paper shall focus on an in-depth discussion of the issues outlined throughout this overview.</font>
+<p>
+<h2><A HREF="http://www.library.ucsf.edu/www/public/CKM/ISSG/Projects/RedSage/Abstract.html">
+<font face="Arial Narrow">
+2.	Red Sage Project</font></a></h2>
+<font face="Arial Narrow">
+The University of California San Francisco Library and Center for Knowledge Management (CKM) 
+is taking an important step in the creation of a knowledge management environment.  Through the Red 
+Sage project, a collaborative effort founded by CKM, AT&amp;T Bell Laboratories and Springer-Verlag, the 
+collaborators are exploring the electronic distribution of journals directly to individual physicians and 
+faculty computer desktops.[Lucier 92] With RightPages software developed by AT&amp;T Bell Laboratories, 
+researchers, clinicians, and students will be able to search, read and print the full-page text, including 
+graphics and photographs, from an initial collection of journals published by Springer-Verlag, John Wiley 
+&amp; Sons, the Massachusetts Medical Society and a number of other prominent publishers.</font>
+<p>
+<h3><font face="Arial Narrow">2.1.	Participants</font></h3>
+<font face="Arial Narrow">
+With this project the participating organizations will investigate and begin to understand the 
+technical, legal, economic, business, intellectual property rights and human factors issues surrounding the 
+creation, distribution and use of scientific and medical information in a networked environment. As the first 
+in a series of CKM originated projects, Red Sage will begin to examine the issues that are critical to the 
+creation of the digital library of the future.  Initially the project will run on a local area network with a 
+central document database server and multiple user stations.
+Each member of the Red Sage project is contributing resources at its own expense.  Springer-Verlag 
+and the other publishers are providing electronic content. AT&amp;T's Bell Laboratory is providing content 
+preparation, quality control, and the server software and the initial client application. CKM is providing the 
+test population, delivery infrastructure, evaluation and subsequent client development.</font>
+<P>
+<h4><font face="Arial Narrow">2.1.1.	Publishers</font></h4>
+<font face="Arial Narrow">
+Each publisher is initially providing monochrome page scans at 300 DPI, separate gray-scale figures 
+(e.g. photographs, diagrams and tables) and structured1 header information (e.g. author, title, etc...).  
+Additional content formats will be generated by the publishers in the second phase, including PostScript<TM>, 
+Standard Generalized Markup Language (SGML - ISO 8879) tagged header, reference and body text, and 
+potentially original  data sets and other research results.</font>
+<P>
+<h4><font face="Arial Narrow">2.1.2.	AT&amp;T Bell Laboratory</font></h4>
+<font face="Arial Narrow">
+The Bell Laboratory of AT&amp;T has developed, and will continue to refine, the RightPages server and 
+client software.  The client software is a graphical user-interface (GUI) application for UNIX, Macintosh and 
+PC computers under MOTIF, the Macintosh Finder and Microsoft Windows GUI environments.  AT&amp;T is 
+also providing instrumentation and performance monitoring tools for the RightPages server, as well as 
+determining the content delivery form(s) that publishers will be providing throughout the project, especially 
+as publishers are able to provide SGML text for article body and reference sections.</font>
+<P>
+<h4><font face="Arial Narrow">2.1.3.	The University of California San Francisco</font></h4>
+<font face="Arial Narrow">
+The Library &amp; Center for Knowledge Management (CKM) manages the central server repository and 
+its content, supports the local user community and determines infrastructure (e.g. server, network, staffing, 
+etc...) requirements and scalability.  CKM is providing multiple system access terminals throughout the 
+campus centers as well as within the Library.  In addition, software engineers are developing next-generation 
+client interfaces and investigating links between the Red Sage content and other data sources (e.g. 
+bibliographic, informal communication, scientific databases, etc...).  Members of the CKM staff will also 
+evaluating the implementation and effectiveness of the project.  These evaluations consist of pre- and post-
+deployment interviews with a targeted user community, analysis of usage data generated by client-server 
+interactions (including hard copy requests), and continuous monitoring of the system's performance.</font>
+<P>
+<h3><font face="Arial Narrow">2.2.	 Technical Overview</font></h3>
+<font face="Arial Narrow">
+The Red Sage Project has been assembled from a variety of sources.  The founding partners, CKM, 
+AT&amp;T and Springer-Verlag envisioned the electronic distribution of published literature via computers and 
+networking.  The RightPages software from AT&amp;T, developed at the Bell Laboratory [Story 92], provided 
+the initial technology: a client/server model with a central server repository.  In 1992, the three partners 
+agreed to proceed forward; AT&amp;T providing the software, Springer-Verlag the content, and CKM providing 
+the test-bed.  In this section the technical subsystems are examined and explained; they are:  system 
+requirements and implementation; content preparation, delivery and management; and client/server 
+architecture.</font>
+<P>
+<h4><font face="Arial Narrow">2.2.1.	 System Requirements and Implementation</font></h4>
+<font face="Arial Narrow">
+The Red Sage Project incorporates a client/server architecture with three main aspects to the system 
+infrastructure: server, network and client.  The server provides the data store for the journal content, 
+computational support for the server processes that build, maintain and search content on behalf of client 
+requests, and host processing for a number of directly supported access terminals.  The network connects the 
+client to the server via the de facto Internet standard TCP/IP protocol, either on a local-area or wide-area 
+topology.  The client application uncompresses images from the server, displays content with  a graphical 
+user interface and supports printing to local printers.[Story 92]</font>
+<P>
+<h5><font face="Arial Narrow">2.2.1.1. Networking</font></h5>
+<font face="Arial Narrow">
+The RightPages client and server communicate via the Internet de facto standard TCP/IP protocol.  
+This protocol is supported across both the local-area and wide-area networks that connect the distributed 
+facilities of the University of California San Francisco and its affiliates.  The RightPages server system is 
+located in the Library on the main Parnassus Heights campus; several access terminals are available in the 
+Library and utilize the installed 10BASE-T Ethernet network.  There are also access terminals, provided by 
+the Library and Center for Knowledge Management, located at San Francisco General Hospital, Mt. Zion 
+Hospital and at the Veteran's Administration Hospital.  Each of these other facilities is connected to the 
+Parnaussus Heights network via 1.54 M-bit/sec (T1) link and supports Ethernet locally.</font>
+<P>
+<h2><font face="Arial Narrow">3.	WWW Red Sage Server Implementation</font></h2>
+<font face="Arial Narrow">
+	The statelessness of the WWW HTTP presents some interesting problems for the server-side script 
+developer.  Each element of state must be preserved within the URL which is passed to the CGI script 
+through the appropriate CGI environment variable.  For the purposes of this accessing a page in a Red Sage 
+journal article, the elements of state are:</font>
+
+<UL>
+<LI>	<font face="Arial Narrow">	Journal Title</font>
+<LI>	<font face="Arial Narrow">	Year</font>
+<LI>	<font face="Arial Narrow">	Volume</font>
+<LI>	<font face="Arial Narrow">	Issue</font>
+<LI>	<font face="Arial Narrow">	Page</font>
+</UL>
+
+<font face="Arial Narrow">
+
+At each level, we are able to determine all appropriate information from that point in content space from the 
+above elements.  In the case where we arrive at a page image through navigation by the HTML generated by 
+the server-side scripts and final translation of a click on an <ISMAP> table of contents entry, this is trivial.  
+The scheme also functions properly if the above elements are provided through a different means, such as an 
+external bibliographic system.  In the case of searching, we use the five elements of state described above to 
+parse the issue structure file provided by AT&amp;T to produce a pointer to the first page of an article.</font>
+<P>
+<h3><A HREF="http://www.library.ucsf.edu/WWW_2_94/toplevel"><font face="Arial Narrow">3.1.	Top Level Navigation</font></a></h3>
+<font face="Arial Narrow">
+	When the patron opens the URL that points to the top-level of the Red Sage collection, the CGI 
+script examines all entries at the highest level of content.  A list of all journals in the collection is 
+presented as an HTML page containing greyscale TIFF images if the latest issue for each title.  The server-
+side software queries the data store for the current status of the contents at that level so faulty links are 
+avoided.  We can get this information either by examining the file system directly or by issuing a query to 
+the Red Sage RightPages server daemon.  The greyscale icons for the most current contents for each 
+subsequent level are organized and presented in LIFO order.  Thus, the patron can descend down from the 
+collection of journals, through years, volumes and issues, finally reaching the first page of the text after 
+selecting an article entry in the table of contents.  At each level, the CGI-generated HTML page contains 
+hypertext links to the parent page as well as to the appropriate child pages, the top-level page and a search 
+page.</font>
+<P>
+<h3><A HREF="http://www.library.ucsf.edu/WWW_2_94/toc"><font face="Arial Narrow">3.2.	Table Of Contents</font></a></h3>
+<font face="Arial Narrow">
+	After navigating to an article in an issue, the user is presented with an HTML page containing a 
+TIFF image of the table of contents page or pages.  At the present time, AT&amp;T adds value in the form of a 
+file for each issue which contains position and bounding box coordinates for each item in the table of 
+contents.  The <ISMAP> HTML tag is used to pass the coordinates of the user's mouse click on the Table 
+of Contents to the server, which returns an HTML page with the appropriate first page image and 
+navigation buttons for the selected article.  Along with each issue AT&amp;T provides data files which describe 
+the position of each page relative to its article as well as pointers to any high-quality figure images 
+associated with each article.[O'Gorman 92]</font>
+<P>
+<h3><A HREF="http://www.library.ucsf.edu/WWW_2_94/page"><font face="Arial Narrow">3.3.	Page Delivery</font></a></h3>
+<font face="Arial Narrow">
+	Once we reach the terminal level; that of content provision, the server-side Perl [Wall 90] scripts 
+select the appropriate full-text TIFF page image for the selected resolution and builds an HTML page around 
+it.  Note that the TIFF image format is not currently supported as an inline option for NCSA's Mosaic 
+World Wide Web browser.  Cheong S. Ang, a software engineer at the CKM has incorporated the public 
+domain TIFF library code into the browser so that the images are presented as inline images on the page. 
+	At the head of each page are four sets of buttons; one set for page-wise navigation, one for article-
+wise navigation, a third for stacks navigation and the fourth for miscellaneous options.  The footer of the 
+page contains a link to any high-quality images, currently JPEG images of the figures associated with each 
+article.  Since these pages are always generated on-the-fly, we are assured of the validity of each link.  If the 
+software can't guarantee the validity of a particular link, whether for lack of content or failure to convert an 
+external bibliographic reference to content (content anomaly) it is either grayed out of replaced with the 
+next-best choice.  The first and last of each set are almost always active while context determines the state 
+of next and previous.  The sets of buttons are described below.</font> 
+<P>
+<h3><font face="Arial Narrow">3.4.	Content Navigation Buttons</font></h3>
+<P>
+<h4><font face="Arial Narrow">3.4.1.	Page-Wise Navigation</font></h4>
+<font face="Arial Narrow">
+	These buttons provide the ability to navigate within the article.  First and last page of the current 
+article are always active, while next and previous page buttons are enabled if appropriate.  We query the 
+positioning files provided by AT&amp;T in the data store to determine the position of this page at the article and 
+issue level.  Since we pre-resolve all hypertext links checking for the existence of the actual TIFF contents 
+the system always returns an valid pointer.  The hypertext link generated is thus guaranteed to be as valid as 
+the data store is accessible.</font>
+<P>
+<h4><font face="Arial Narrow">3.4.2.	Article-Wise Navigation</font></h4>
+<font face="Arial Narrow">
+	Similar to the page navigation functions, the article buttons allow navigation within the issue 
+according to the page positioning data provided by AT&amp;T.  The article buttons function as their page-wise 
+analogs.</font>  
+<P>
+<h4><font face="Arial Narrow">3.4.3.	Stacks Navigation</font></h4>
+<font face="Arial Narrow">
+	At each level, we generate a set of stack pointers that allow navigation between levels without 
+having to reload images in the skipped levels.   One drawback that the current HTTP/HTML client-server 
+architecture presents is the inability to force-cache images that can require constant reloading.  With some 
+sixty (60)  iconic images on the top level of the collection, the overhead of that many HTTP connections 
+rapidly approaches that of the data transfer itself.  If we have learned anything about the limitations of 
+HTML and HTTP as implemented now from this project, it is the need for both always/never caching hints 
+to the browsers to and the incorporation of an MGET facility in HTTP.  At present,  we provide direct 
+access to the top level and the volume level from each page image.</font>
+<P>
+<h4><font face="Arial Narrow">3.4.4.	Miscellaneous Navigation</font></h4>
+<font face="Arial Narrow">
+	At the level of content delivery, Navigational options include several links to additional features of 
+the system.  The user can select a magnification level for page images using a zoom toggle button.  This 
+choice stays in effect for the duration of the session.  A link to the script that generates the WAIS search 
+page is included in this section, as is a link back to the table of contents for the current issue.  A link is 
+included to an HTML enriched presentation of the MEDLINE record for the article, if available.  In the case 
+that the MEDLINE record is available, the system attempts to build a web of enriched MEDLINE abstract 
+pages for each article in the issue which can serve as an annotated table of contents.</font>
+<P>
+<h3><A HREF="http://www.library.ucsf.edu/WWW_2_94/figures"><font face="Arial Narrow">3.5.	Figures</font></a></h3>
+<font face="Arial Narrow">
+	AT&amp;T currently provides high-quality JPEG scans of any figures that might accompany an article.  
+The assignment of images to articles is controlled by the group description files associated with each issue.  
+If the CGI scripts detect any figures for an article, links are placed at the bottom of the page  and the 
+browser calls the appropriate visualization program to present the image to the user.</font>
+<P>
+<h3><A HREF="http://www.library.ucsf.edu/WWW_2_94/searchpage"><font face="Arial Narrow">3.6.	Searching</font></a></h3>
+<font face="Arial Narrow">
+	In order to reproduce the functionality of the AT&amp;T system, we chose the WAIS index and search 
+engine to build an inverted index of the full-text and MEDLINE information.  When a user clicks on that 
+hypertext link, a CGI script builds a search page dynamically that:</font>
+
+<UL>
+<LI>	<font face="Arial Narrow">	Allows the user to enter a free-text search term.</font>
+<LI>	<font face="Arial Narrow">	Shows the user all journals which have been WAIS indexed individually.</font>
+<LI>	<font face="Arial Narrow">	Presents a link to the two interfaces to the Medical Subject Headings search facility.</font>
+</UL>
+
+<font face="Arial Narrow">
+
+After the search is complete, an HTML page is generated that allows the user to view the results as a set of 
+formatted MEDLINE records that include bibliographic information, the full abstract, if available and the 
+ability to search the MeSH index using the authorized MeSH term.  From either the raw search results or 
+the enriched MEDLINE record, the user can jump directly to the full-page TIFF image by a hypertext link.</font>
+<P>
+<h2><font face="Arial Narrow">4.	WAIS indexing</font></h2>
+<font face="Arial Narrow">
+	In addition to the OCR of the scanned text image supplied by AT&amp;T , we query the MELVYL 
+MEDLINE index of biomedical journals for extended bibliographic data on each article.  In order to preserve 
+the integrity of the AT&amp;T supplied content, we create a mirror tree of MEDLINE records on traditional 
+magnetic disk that corresponds to the TIFF data on MO storage.  From this parallel tree, we generate the 
+WAIS indices used in the searching features of the system.<A HREF="http://www.library.ucsf.edu/WWW_2_94/wais-concepts">[Kahle 89]</a>
+</font>
+<P>
+<h3><font face="Arial Narrow">4.1.	Full Text</font></h3>
+<font face="Arial Narrow">
+	AT&amp;T provides an OCR of the scanned text page as a set of coordinates describing the position 
+and dimensions a bounding box and the corresponding text.  This information is not useful for 
+reconstructing the logical content for such applications as presentation through an ASCII WWW client, but 
+can be used for a full-text search.  We remove the coordinate information from the file, and combine it with 
+the NLM MEDLINE index record.  A WAIS index is then built of all article's MEDLINE record and 
+scanned text file, with the WAIS Headline field in the Doc ID overloaded to present a URL as the headline 
+when searched.</font>
+<P>
+<h3><font face="Arial Narrow">4.2.	Fielded Search</font></h3>
+<font face="Arial Narrow">
+	We have also deployed the WAIS indexing software to construct a brute-force relational database of 
+sorts.  The MEDLINE record for each article is compiled by the NLM and provides a set of authorized terms 
+from the hierarchical Medical Subject Headings (MeSH) system.  We create a WAIS index for the whole 
+collection as well as for each journal of the MeSH terms in the constituent MEDLINE records.  Since the 
+MeSH is an controlled vocabulary, we create a web of HTML that allows the used to select a search term 
+either alphabetically or through the hierarchical sub-headings.  This is one of the pre-cooked aspects of the 
+system in that we must perform a download of MEDLINE records from MELVYL and then process the 
+entire result set.  Downloading the records from MELVYL takes several hours, while the Perl script that 
+generates the MeSH web takes approximately 20 minutes. The searches are quite speedy, less than 1 second, 
+due to the small size of the MeSH terms.</font>
+<P>
+<h2><A HREF="http://www.library.ucsf.edu/WWW_2_94/www_melvyl"><font face="Arial Narrow">5.	WWW MELVYL/Red Sage Client</font></a></h2>
+<font face="Arial Narrow">
+	One of the appealing features of the World Wide Web is the ability to effectively obscure the 
+specific details of the precise network tasks performed upon the activation of a hypertext link.  For the 
+patron of the biomedical research library the details of the network mechanics involved in linking any 
+number of related information stores for the maximum value added are irrelevant.  Towards that seamless 
+knowledge management environment, we have developed an HTML interface to the DLA's MELVYL index 
+of the NLM's MEDLINE annotated index of biomedical journal articles.
+	Using a forms-based search page, a patron enters a search that starts a telnet(1) session to the 
+MELVYL server.  A connection is made to the MEDLINE database, and a search is issued.  Upon 
+successful completion of the search, the server processes the raw MEDLINE record, presenting the author, 
+title, journal name, volume and issue as well as the abstract.  If the server can determine that the article 
+returned by the search is resident in the Red Sage data store, it will also include a hypertext link that 
+interfaces to the page-level content delivery CGI script.  In this manner, the we have effectively linked the 
+two distinct yet overlapping bibliographic systems.</font>
+<P>
+<h2><font face="Arial Narrow">6.	Modified HTTP Server</font></h2>
+<font face="Arial Narrow">
+	We have been using the National Center for Supercomputing Applications httpd Hypertext server 
+for delivering this content over the World Wide Web.<A HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html">[McCool 94]</a> A fine piece of software, we found it 
+necessary to perform a few minor enhancements in order to serve the particular content as provided by 
+AT&amp;T.  As a convention, most all World Wide Web clients and servers overload the filename with an 
+extension in order to determine the type and the proper presentation method.  This legacy of the archaic MS-
+DOS operating system was wholly inappropriate to huge data stores developed under environments far from 
+the desktop personal computer.  The Red Sage TIFF images do contain the letters 'tiff' in the filename, but 
+they are not at the end of the filename after a period.  
+	In order to avoid either renaming gigabytes of TIFF to satisfy the filename overload convention to 
+get the MIME content-type: set correctly or establishing a set of symbolic links with overloaded names to 
+the original content, we chose to modify the server.  There exists a standard UNIX utility, file(1) which 
+checks the magic(5) number, a unique bit sequence that identifies the type of a file, and sets the MIME 
+content-type: field accordingly.  We integrated this code into the NCSA httpd server so that it bases the 
+value of the content-type: field on the actual contents of the data file instead of an uncertain file extension.</font>
+<P>
+<h2><font face="Arial Narrow">7.	Further Research</font></h2>
+<font face="Arial Narrow">
+	This project has been a prototype development effort, and in conducting the research required to 
+produce this prototype, the opportunity for further enhancements have surfaced.  Since we are working from 
+a commercial product supplied by AT&amp;T,. the needs of the academic research library diverge from the goals 
+held by the developers of the original system.  Working towards a knowledge management environment, the 
+mission here at the CKM is to integrate various networked information resources into a seamless, coherent 
+user interface.  The ease of use of the World Wide Web system forces the complexities behind the scenes so 
+that the  details of the network magic are hidden from the user.  Since integrating a large MOTIF 
+RightPages client into Mosaic or any other WWW browser is impractical, we need to build upon the work 
+done by the CERN, NCSA and others to build systems capable of delivering content to patrons with a 
+minimum of effort and potential confusion.  A discussion of a few  of the more interesting points that the 
+aforementioned development effort  produced follow.</font>
+<P>
+<h3><font face="Arial Narrow">7.1.	Alerting</font></h3>
+<font face="Arial Narrow">
+	The AT&amp;T system provides for an alerting system based on user-established profiles.  We would 
+duplicate the functionality of the Red Sage system by implementing a cron(1) job that would collect the  
+log files for newly loaded content and generate a hit list for each users' profile entries. based on a newly 
+added content WAIS index created for this purpose.  Moving further on this model, we would like to design 
+a more generalized alerting system that would query MELVYL MEDLINE for newly added content, provide 
+an alert list, either through electronic mail or  a HTML page  with  links to the page images of any 
+overlaps in the MEDLINE result set that were also resident in the Red Sage content.</font>
+<P>
+<h3><font face="Arial Narrow">7.2.	Automatic Bibliographic Updates</font></h3>
+<font face="Arial Narrow">
+	At the current time, we perform a bulk download of MEDLINE records from the DLA MELVYL 
+system with no regularity.  We would like to establish a system where the aforementioned content load log 
+files triggered a telnet(1) session that connects to MELVYL and downloads the MEDLINE record.  In 
+addition, this would tie into the alerting subsystem as described above.  We are considering employing the 
+auto update feature of MELVYL to initiate electronic mail messages triggered by the arrival of new content 
+into the MEDLINE index as the method of obtaining the enriched bibliographic data.</font>
+<P>
+<h3><font face="Arial Narrow">7.3.	Delivery of Print Products</font></h3>
+<font face="Arial Narrow">
+	The quality of the scanned TIFF images provided by AT&amp;T varies greatly, although the image 
+cleanup algorithms help substantially.  In any event, the logistics involved with transporting the higher 
+resolution images across the network, even for local transfers, has the potential to create a bottleneck.  One 
+solution that we have been examining is to designate an attribute associated with a URL, perhaps in 
+accordance with the evolving URI standards or the DIENST 
+<A HREF="http://cs-tr.cs.cornell.edu/Info/dienst_protocol.html">[Davis 94]</a> bibliographic content retrieval 
+protocol, that would allow an HTTP query to request a printable instance of the object referred to by the 
+URL.  Providing compressed PostScript data over the network would both lessen the bandwidth 
+consumption as well as provide much higher quality printed output.</font>
+<P>
+<h3><font face="Arial Narrow">7.4.	Full MeSH</font></h3>
+<font face="Arial Narrow">
+	The authorized, hierarchical Medical Subject Headings provided by the NLM is a standardized 
+vocabulary for conducting uniform biomedical bibliographic searches on the MEDLINE index.  We are 
+currently in negotiation with the DLA procure a machine readable copy of this database so that we can 
+integrate it into our searching and alerting systems.  Such a controlled vocabulary would provide 
+consistency between the Red Sage content and the MELVYL MEDLINE system.</font>
+<P>
+<h3><A HREF="http://www.library.ucsf.edu/public/CKM/ISSG/Projects/GroupLink/Abstract.html"><font face="Arial Narrow">7.5.	LINK Tags</font></a></h3>
+<font face="Arial Narrow">
+	The specifications for HTML+ include the facility to impose an order on a set of HTML pages 
+using the &lt;LINK&gt; and &lt;GROUP&gt; tags.  At the CKM, we are implementing this functionality, as it lends 
+itself especially well to this application.  We intend to create relationships between pages in an article that 
+fit into the defined roles of NEXT and PREVIOUS, as well as to the article's meta-information, such as 
+CONTENTS and PARENT.  This functionality is being implemented directly into the Mosaic browser, so 
+that the CGI scripts need only specify &lt;LINK&gt; tags instead of using hypertext links.  We hope to use this 
+as a method of printing whole articles, as the meta-information for each page relative to the article will be 
+available to the server using the PARTOF value for the ROLE attribute of the tag.</font>
+<p>
+<font face="Arial Narrow">
+REFERENCES</font>
+<P>
+<A HREF="http://cs-tr.cxs.cornell.edu/Info/dienst_protocol.html"><font face="Arial Narrow">[Davis 94] Davis, J.R., Lagoze, C. Dienst, a Protocol for a Distributed Digital Document Library</font> </a>
+
+<P>
+<A HREF="http://www.library.ucsf.edu/wais-concepts.txt"><font face="Arial Narrow">[Kahle 89] Kahle, B. Wide Area Information Server Concepts.  Thinking Machines, Inc. 3 Nov 1989.</font></a>
+
+<P>
+<A HREF="http://www.library.ucsf.edu/public/Papers/KnowledgeMgt/RefiningRoles/RefiningRoles.html"><font face="Arial Narrow">[Lucier 90] Lucier, R.E. Knowledge management: refining roles in scientific communication.  EDUCOM Review, Fall 1990, vol 25, (3):21-7.</font></a>
+
+<P>
+<font face="Arial Narrow">
+[Lucier 92] Lucier, R.E. Towards a knowledge management environment:  a strategic framework.  
+EDUCOM Review, Nov.-Dec. 1992, vol 27 (6):24-31.</font>
+
+<P>
+<A HREF="http://hoohoo.ncsa.uiuc.edu/docs/Overview.html"><font face="Arial Narrow">[McCool 94] NCSA httpd Overview.</font></a>
+
+<P>
+<A HREF="http://hoohoo.ncsa.uiuc.edu/cgi/overview.html"> <font face="Arial Narrow"> [McCool 94a] The Common Gateway Interface</font> </a>
+
+<P>
+<font face="Arial Narrow">
+[O'Gorman 92] Image and document processing techniques for the RightPages electronic library 
+system/IN:Proceedings, 11th IAPR International Conference on Pattern Recognition, Vol II. Conference B: 
+Pattern Recognition Methodology and Systems.  The Hague, Netherlands, 30 Aug-2 Sep, 1992, Los 
+Alamitos, CA, USA; IEEE Computer Soc Press, 1992, p260-3.</font>
+
+<P>
+<font face="Arial Narrow">
+[Story 92] Story, G.A., O'Gorman, L., Fox, D., Schaper, L.L., et al, The RightPages image-based 
+electronic library for altering and browsing, Computer, Sept. 1992, vol 25, (9); 17-26.</font>
+
+<P>
+<font face="Arial Narrow">
+[Wall 90] Wall, L., Schwartz, R.L., Programming Perl, O'Reilly and Associates, Inc, 1990.</font>
+
+<P>
+<font face="Arial Narrow">
+marc@ckm.ucsf.edu</font>
+
+<P>
+<font face="Arial Narrow">
+Marc Salomon is a Software Engineer with the Innovative Software and Systems Group of the Library and Center for Knowledge Management at the University of California, San Francisco Medical Center. Most 
+recently, he has been working on both the Red Sage Electronic Journal Project as outlined in this paper, and 
+with the Galen II project that will use the World Wide Web as the base technology for the next generation 
+of library and informatics presentation and delivery.</font> 
+
+<P>
+<font face="Arial Narrow">
+EDUCATION</font>
+
+<P>
+<font face="Arial Narrow">
+B.A. The University of Texas at Austin, 1989, Political Science/Latin American Studies, CS.</font>
+
+<P>
+<font face="Arial Narrow">
+EXPERIENCE</font>
+
+<P>
+<font face="Arial Narrow">
+1993-present,  Software Engineer, ISSG/LIB-CKM, UCSF.</font> 
+<P>
+<font face="Arial Narrow">
+1991-1992, Senior Software Engineer, Carlyle Systems (now Marcorp), San Mateo, CA. Designed, wrote, 
+implemented and debugged Online Public Access Catalog in C/INGRES on SunOS 4.1.x .</font> 
+<P>
+<font face="Arial Narrow">
+1989-1992,  Software Engineer, Wang Laboratories, Redwood City, CA. Responsible for development of 
+SCO UNIX-based word processing package.</font> 
+<P>
+<font face="Arial Narrow">
+1986-1989,  Programmer Analyst, Department of Chemistry, The University of Texas, Austin, Austin, 
+TX. Developed DOS/C mass spectrometer and temperature ramp control and data acquisition package.</font> 
+<P>
+<font face="Arial Narrow">
+1984-1986,  Computer Operator, Clark, Thomas, Winters and Newton Attorneys at Law, Austin, TX. 
+Supervised batch processing and developed report generation scripts.</font> 
+<P>
+<font face="Arial Narrow">
+1981-1984  Computer Operator, Mobil Exploration and Producing Services, Inc.  Operated CDC 
+Mainframes, wrote operator utilities, trained senior career operators on internal operating system structure.</font> 
+<P>
+<font face="Arial Narrow">
+1976-1980  Programmer, On-Trak Data Systems, Inc.  Series of contracts while in high school. Wrote file 
+filters in BASIC for IBM 5110 pre-microcomputers. 
+
+AWARDS
+   1st place, 1977 Southern Methodist University programming contest. 
+   3rd place, 1978 Southern Methodist University programming contest. 
+   2nd place, 1979 North Texas State University programming contest.</font> 
+
+<P>
+
+<font face="Arial Narrow">
+
+David C. Martin is Assistant Director of the UCSF Center for Knowledge
+Management where he leads the software development team.  The Center is
+building a knowledge management environment for the campus community.
+Prior to coming to UCSF, Mr. Martin worked for Molecular Simulations,
+Sun Microsystems and other silicon valley companies in the areas of
+user-interfaces, networking, artificial intelligence, databases and
+operating systems.  Mr. Martin received his M.S. in computer science
+from the University of Wisconsin - Madison and his B.A. in sociology and
+computer science from the University of California - Berkeley.</font>
+<P>
+</pre>
+</BODY>
+</HTML>
